@@ -17,6 +17,10 @@ public class ModTileEntities {
 			() -> TileEntityType.Builder.of(TileEntityKubryzlt::new, ModBlocks.KUBRYZLT.get()).build(null)
 	);
 	
+	public static final RegistryObject<TileEntityType<TileEntityEdificeCore>> EDIFICE_CORE = TILE_ENTITIES.register("edifice_core",
+			() -> TileEntityType.Builder.of(TileEntityEdificeCore::new, ModBlocks.EDIFICE_CORE.get()).build(null)
+	);
+	
 	public static void register(IEventBus bus) {
 		TILE_ENTITIES.register(bus);
 	}

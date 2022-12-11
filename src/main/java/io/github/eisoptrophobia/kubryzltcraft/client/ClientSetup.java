@@ -2,9 +2,12 @@ package io.github.eisoptrophobia.kubryzltcraft.client;
 
 import io.github.eisoptrophobia.kubryzltcraft.ConfigCommon;
 import io.github.eisoptrophobia.kubryzltcraft.Kubryzltcraft;
+import io.github.eisoptrophobia.kubryzltcraft.block.entity.container.ModContainers;
 import io.github.eisoptrophobia.kubryzltcraft.client.render.RendererTileEntityKubryzlt;
+import io.github.eisoptrophobia.kubryzltcraft.client.screen.ScreenEdificeCore;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.team.KubryzltcraftTeam;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.team.KubryzltcraftTeamManager;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -20,6 +23,8 @@ public class ClientSetup {
 			KubryzltcraftTeamManager.register(team.id, team.prefix, team.getKubryzltTexture());
 		}
 		RendererTileEntityKubryzlt.register();
+		
+		ScreenManager.register(ModContainers.EDIFICE_CORE.get(), ScreenEdificeCore::new);
 	}
 	
 	@SubscribeEvent

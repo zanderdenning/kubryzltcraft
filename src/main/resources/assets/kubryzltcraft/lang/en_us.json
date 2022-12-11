@@ -1,8 +1,14 @@
 {
 	"block.kubryzltcraft.kubryzlt": "Kubryzlt",
+	"block.kubryzltcraft.edifice_core": "Edifice Core",
+
+	"item.kubryzltcraft.blueprint_blank": "Blueprint (Blank)",
+	"item.kubryzltcraft.blueprint_radar": "Blueprint (Radar)",
 
 	"itemGroup.kubryzltcraft": "Kubryzltcraft",
 
 	"kubryzltcraft.argument.territory.invalid": "Invalid territory",
-	"kubryzltcraft.argument.kubryzltcraft_team.invalid": "Invalid Kubryzltcraft team"
+	"kubryzltcraft.argument.kubryzltcraft_team.invalid": "Invalid Kubryzltcraft team",
+
+	"screen.kubryzltcraft.edifice_core": "Edifice Core"
 }

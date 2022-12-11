@@ -17,7 +17,9 @@ public class ModBlocks {
 	
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Kubryzltcraft.MOD_ID);
 	
-	public static final RegistryObject<Block> KUBRYZLT = registerBlock("kubryzlt", () -> new BlockKubryzlt());
+	public static final RegistryObject<Block> KUBRYZLT = registerBlock("kubryzlt", BlockKubryzlt::new);
+	
+	public static final RegistryObject<Block> EDIFICE_CORE = registerBlock("edifice_core", BlockEdificeCore::new);
 	
 	public static void register(IEventBus bus) {
 		BLOCKS.register(bus);

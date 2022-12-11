@@ -1,23 +1,34 @@
 package io.github.eisoptrophobia.kubryzltcraft.warfare.edifice;
 
+import io.github.eisoptrophobia.kubryzltcraft.item.ModItems;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.StructureBlockTileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.template.TemplateManager;
 
 import java.util.List;
 
 public class EdificeRadar extends Edifice {
 	
 	@Override
-	public boolean isValid() {
+	public Item getBlueprint() {
+		return ModItems.BLUEPRINT_RADAR.get();
+	}
+	
+	@Override
+	public boolean isValid(BlockPos pos, World world) {
 		return false;
 	}
 	
 	@Override
-	public List<ItemStack> getMissingBlocks() {
+	public List<ItemStack> getMissingBlocks(BlockPos pos, World world) {
 		return null;
 	}
 	
 	@Override
-	public void placeBlock(ItemStack item) {
+	public void placeBlock(BlockPos pos, World world, ItemStack item) {
 	
 	}
 }
