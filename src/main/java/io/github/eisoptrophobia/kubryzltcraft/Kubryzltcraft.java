@@ -6,9 +6,12 @@ import io.github.eisoptrophobia.kubryzltcraft.block.entity.container.ModContaine
 import io.github.eisoptrophobia.kubryzltcraft.client.ClientSetup;
 import io.github.eisoptrophobia.kubryzltcraft.data.CapabilityKubryzltcraftTeamMember;
 import io.github.eisoptrophobia.kubryzltcraft.item.ModItems;
+import io.github.eisoptrophobia.kubryzltcraft.network.Network;
+import io.github.eisoptrophobia.kubryzltcraft.server.ServerSetup;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.ModTerritoryManagers;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.TerritoryManager;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.edifice.Edifice;
+import io.github.eisoptrophobia.kubryzltcraft.warfare.edifice.EdificeUtils;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.edifice.ModEdifices;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.team.KubryzltcraftTeamManager;
 import net.minecraft.util.RegistryKey;
@@ -60,9 +63,14 @@ public class Kubryzltcraft {
 		
 		eventBus.addListener(this::setup);
 		eventBus.addListener(ClientSetup::setup);
+		eventBus.addListener(ServerSetup::setup);
 	}
 	
 	private void setup(FMLCommonSetupEvent event) {
+		Network.init();
+		
+		EdificeUtils.initRegistry();
+		
 		CapabilityKubryzltcraftTeamMember.register();
 		
 		ResourceLocation territoryManagerResourceLocation = ResourceLocation.tryParse(ConfigCommon.TERRITORY_MANAGER.get());

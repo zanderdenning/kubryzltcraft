@@ -3,6 +3,8 @@ package io.github.eisoptrophobia.kubryzltcraft.warfare.edifice;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -13,6 +15,8 @@ import java.util.List;
 public abstract class Edifice extends ForgeRegistryEntry<Edifice> {
 	
 	public abstract Item getBlueprint();
+	
+	public abstract CompoundNBT getNBT();
 	
 	public abstract boolean isValid(BlockPos pos, World world);
 	
