@@ -5,7 +5,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -39,6 +38,14 @@ public class ContainerEdificeCore extends Container {
 				addSlot(new SlotItemHandler(handler, 1, 134, 35));
 			});
 		}
+	}
+	
+	public TileEntity getTileEntity() {
+		return tileEntity;
+	}
+	
+	public IInventory getContainer() {
+		return container;
 	}
 	
 	private void makeInventorySlots() {

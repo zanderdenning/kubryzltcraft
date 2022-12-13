@@ -1,6 +1,7 @@
 package io.github.eisoptrophobia.kubryzltcraft.block.entity;
 
 import io.github.eisoptrophobia.kubryzltcraft.data.tags.KubryzltcraftTags;
+import io.github.eisoptrophobia.kubryzltcraft.warfare.edifice.Edifice;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;

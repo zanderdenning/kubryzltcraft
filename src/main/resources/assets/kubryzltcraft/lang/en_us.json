@@ -10,5 +10,9 @@
 	"kubryzltcraft.argument.territory.invalid": "Invalid territory",
 	"kubryzltcraft.argument.kubryzltcraft_team.invalid": "Invalid Kubryzltcraft team",
 
+	"kubryzltcraft.gui.edifice_core.incomplete": "Incomplete",
+	"kubryzltcraft.gui.edifice_core.obstructed": "Obstructed",
+	"kubryzltcraft.gui.edifice_core.valid": "Valid",
+
 	"screen.kubryzltcraft.edifice_core": "Edifice Core"
 }

@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.registries.ForgeRegistryEntry;
@@ -17,6 +18,8 @@ public abstract class Edifice extends ForgeRegistryEntry<Edifice> {
 	public abstract Item getBlueprint();
 	
 	public abstract CompoundNBT getNBT();
+	
+	public abstract Vector3i getOffset();
 	
 	public abstract boolean isValid(BlockPos pos, World world);
 	

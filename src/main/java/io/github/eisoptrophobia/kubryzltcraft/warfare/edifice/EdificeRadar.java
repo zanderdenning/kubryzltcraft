@@ -8,12 +8,15 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.StructureBlockTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 
 import java.util.List;
 
 public class EdificeRadar extends Edifice {
+	
+	private static Vector3i offset = new Vector3i(-1, 1, -1);
 	
 	@Override
 	public Item getBlueprint() {
@@ -23,6 +26,11 @@ public class EdificeRadar extends Edifice {
 	@Override
 	public CompoundNBT getNBT() {
 		return null;
+	}
+	
+	@Override
+	public Vector3i getOffset() {
+		return offset;
 	}
 	
 	@Override

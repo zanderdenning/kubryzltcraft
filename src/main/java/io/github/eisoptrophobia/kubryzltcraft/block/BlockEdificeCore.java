@@ -43,14 +43,6 @@ public class BlockEdificeCore extends Block {
 			if (!player.isCrouching()) {
 				if (tileEntity instanceof TileEntityEdificeCore) {
 					INamedContainerProvider containerProvider = createContainerProvider(world, pos);
-					TileEntityEdificeCore edificeCore = (TileEntityEdificeCore) tileEntity;
-					edificeCore.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
-						Item blueprint = handler.getStackInSlot(0).getItem();
-						Edifice edifice = EdificeUtils.getEdificeByBlueprint(blueprint);
-						if (edifice != null) {
-							Kubryzltcraft.LOGGER.info(EdificeUtils.getEdificeNBT(edifice));
-						}
-					});
 					NetworkHooks.openGui(((ServerPlayerEntity) player), containerProvider, tileEntity.getBlockPos());
 				}
 			}
