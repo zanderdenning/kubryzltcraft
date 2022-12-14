@@ -3,6 +3,7 @@ package io.github.eisoptrophobia.kubryzltcraft.client;
 import io.github.eisoptrophobia.kubryzltcraft.ConfigCommon;
 import io.github.eisoptrophobia.kubryzltcraft.Kubryzltcraft;
 import io.github.eisoptrophobia.kubryzltcraft.block.entity.container.ModContainers;
+import io.github.eisoptrophobia.kubryzltcraft.client.render.RendererTileEntityEdificeCore;
 import io.github.eisoptrophobia.kubryzltcraft.client.render.RendererTileEntityKubryzlt;
 import io.github.eisoptrophobia.kubryzltcraft.client.screen.ScreenEdificeCore;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.team.KubryzltcraftTeam;
@@ -22,7 +23,9 @@ public class ClientSetup {
 		for (ConfigCommon.TeamsConfig.TeamConfig team : ConfigCommon.getTeams()) {
 			KubryzltcraftTeamManager.register(team.id, team.prefix, team.getKubryzltTexture());
 		}
+		
 		RendererTileEntityKubryzlt.register();
+		RendererTileEntityEdificeCore.register();
 		
 		ScreenManager.register(ModContainers.EDIFICE_CORE.get(), ScreenEdificeCore::new);
 	}

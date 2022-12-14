@@ -13,8 +13,10 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.template.Template;
+import net.minecraftforge.common.util.Constants;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class EdificeUtils {
 	
 	private static final HashMap<Edifice, StructureData> structureDataRegistry = new HashMap<>();
+	
 	private static final HashMap<Item, Edifice> blueprintRegistry = new HashMap<>();
 	
 	public static void initRegistry() {
@@ -34,6 +37,10 @@ public class EdificeUtils {
 	
 	public static Edifice getEdificeByBlueprint(Item blueprint) {
 		return blueprintRegistry.get(blueprint);
+	}
+	
+	public static StructureData getEdificeStructureData(Edifice edifice) {
+		return structureDataRegistry.get(edifice);
 	}
 	
 	public static CompoundNBT getEdificeNBT(Edifice edifice) {
@@ -51,12 +58,13 @@ public class EdificeUtils {
 		return null;
 	}
 	
-	public static Pair<Validity, Map<Item, Integer>> getMissingBlocks(World world, Edifice edifice, BlockPos pos, Rotation rotation) {
+	public static Pair<Validity, Map<Item, Pair<Integer, List<Pair<Integer, int[]>>>>> getMissingBlocks(World world, Edifice edifice, BlockPos pos, Rotation rotation) {
 		StructureData structure = structureDataRegistry.get(edifice);
-		HashMap<Item, Integer> missing = new HashMap<>();
+		Map<Item, Pair<Integer, List<Pair<Integer, int[]>>>> missing = new HashMap<>();
 		boolean obstructed = false;
 		int[] size = structure.size;
-		for (Pair<int[], Integer> block : structure.blocks) {
+		for (int i = 0; i < structure.blocks.size(); i ++) {
+			Pair<int[], Integer> block = structure.blocks.get(i);
 			int[] position = null;
 			int x = block.getFirst()[0];
 			int y = block.getFirst()[1];
@@ -84,7 +92,10 @@ public class EdificeUtils {
 				}
 				if (!ideal.isAir()) {
 					Item item = ideal.getBlock().asItem();
-					missing.put(item, missing.getOrDefault(item, 0) + 1);
+					Pair<Integer, List<Pair<Integer, int[]>>> current = missing.getOrDefault(item, new Pair<>(0, new ArrayList<>()));
+					current.getSecond().add(new Pair<>(block.getSecond(), position));
+					Pair<Integer, List<Pair<Integer, int[]>>> newValue = new Pair<>(current.getFirst() + 1, current.getSecond());
+					missing.put(item, newValue);
 				}
 			}
 		}
@@ -109,15 +120,19 @@ public class EdificeUtils {
 		private List<Pair<int[], Integer>> blocks;
 		private List<BlockState> palette;
 		
+		public List<BlockState> getPalette() {
+			return palette;
+		}
+		
 		public StructureData(CompoundNBT nbt) {
-			ListNBT sizeList = nbt.getList("size", 3);
+			ListNBT sizeList = nbt.getList("size", Constants.NBT.TAG_INT);
 			size = new int[] {sizeList.getInt(0), sizeList.getInt(1), sizeList.getInt(2)};
-			ListNBT blocksList = nbt.getList("blocks", 10);
+			ListNBT blocksList = nbt.getList("blocks", Constants.NBT.TAG_COMPOUND);
 			blocks = blocksList.stream().map(e -> {
-				ListNBT pos = ((CompoundNBT) e).getList("pos", 3);
+				ListNBT pos = ((CompoundNBT) e).getList("pos", Constants.NBT.TAG_INT);
 				return new Pair<>(new int[] {pos.getInt(0), pos.getInt(1), pos.getInt(2)}, ((CompoundNBT) e).getInt("state"));
 			}).collect(Collectors.toList());
-			palette = nbt.getList("palette", 10).stream().map(e -> NBTUtil.readBlockState((CompoundNBT) e)).collect(Collectors.toList());
+			palette = nbt.getList("palette", Constants.NBT.TAG_COMPOUND).stream().map(e -> NBTUtil.readBlockState((CompoundNBT) e)).collect(Collectors.toList());
 		}
 	}
 }

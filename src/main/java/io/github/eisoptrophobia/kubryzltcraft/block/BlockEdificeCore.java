@@ -1,21 +1,19 @@
 package io.github.eisoptrophobia.kubryzltcraft.block;
 
-import io.github.eisoptrophobia.kubryzltcraft.Kubryzltcraft;
 import io.github.eisoptrophobia.kubryzltcraft.block.entity.ModTileEntities;
 import io.github.eisoptrophobia.kubryzltcraft.block.entity.TileEntityEdificeCore;
 import io.github.eisoptrophobia.kubryzltcraft.block.entity.container.ContainerEdificeCore;
-import io.github.eisoptrophobia.kubryzltcraft.warfare.edifice.Edifice;
-import io.github.eisoptrophobia.kubryzltcraft.warfare.edifice.EdificeUtils;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -26,14 +24,13 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
 
 public class BlockEdificeCore extends Block {
 	
 	public BlockEdificeCore() {
-		super(AbstractBlock.Properties.copy(Blocks.IRON_BLOCK));
+		super(AbstractBlock.Properties.of((new Material.Builder(MaterialColor.METAL)).nonSolid().build(), MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.METAL));
 	}
 	
 	@Override

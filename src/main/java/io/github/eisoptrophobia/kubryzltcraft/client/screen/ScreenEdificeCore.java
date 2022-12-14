@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.text.ITextComponent;
@@ -20,6 +21,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.awt.*;
+import java.util.List;
 import java.util.Map;
 
 public class ScreenEdificeCore extends ContainerScreen<ContainerEdificeCore> {
@@ -51,13 +53,13 @@ public class ScreenEdificeCore extends ContainerScreen<ContainerEdificeCore> {
 		menu.getTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
 			Edifice edifice = EdificeUtils.getEdificeByBlueprint(handler.getStackInSlot(0).getItem());
 			if (edifice != null) {
-				Pair<EdificeUtils.Validity, Map<Item, Integer>> missingBlocks = EdificeUtils.getMissingBlocks(menu.getTileEntity().getLevel(), edifice, menu.getTileEntity().getBlockPos(), Rotation.NONE);
+				Pair<EdificeUtils.Validity, Map<Item, Pair<Integer, List<Pair<Integer, int[]>>>>> missingBlocks = EdificeUtils.getMissingBlocks(menu.getTileEntity().getLevel(), edifice, menu.getTileEntity().getBlockPos(), Rotation.NONE);
 				switch (missingBlocks.getFirst()) {
 					case INCOMPLETE:
 						int column = 0;
 						int row = 0;
-						for (Map.Entry<Item, Integer> item : missingBlocks.getSecond().entrySet()) {
-							renderItemStack(new ItemStack(item.getKey(), item.getValue()), 8 + column * 18, 66 - row * 18);
+						for (Map.Entry<Item, Pair<Integer, List<Pair<Integer, int[]>>>> item : missingBlocks.getSecond().entrySet()) {
+							renderItemStack(new ItemStack(item.getKey(), item.getValue().getFirst()), 8 + column * 18, 66 - row * 18);
 							column ++;
 							if (column % 4 == 0) {
 								column = 0;
