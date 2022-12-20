@@ -22,10 +22,16 @@ public class ConfigCommon {
 	public static ForgeConfigSpec CONFIG;
 	
 	public static ForgeConfigSpec.ConfigValue<String> TERRITORY_MANAGER;
+	public static ForgeConfigSpec.ConfigValue<Integer> DEFAULT_MORALE;
+	public static ForgeConfigSpec.ConfigValue<String> TIME_ZONE;
+	public static ForgeConfigSpec.ConfigValue<Integer> DAY_TICK_HOUR;
 	
 	static {
 		BUILDER.push("general");
 		TERRITORY_MANAGER = BUILDER.define("territoryManager", "kubryzltcraft:null");
+		DEFAULT_MORALE = BUILDER.define("defaultMorale", 1000);
+		TIME_ZONE = BUILDER.define("timeZone", "America/Los_Angeles");
+		DAY_TICK_HOUR = BUILDER.define("dayTickHour", 20);
 		BUILDER.pop();
 	}
 	

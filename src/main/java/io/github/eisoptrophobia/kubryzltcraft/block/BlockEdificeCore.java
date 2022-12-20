@@ -12,11 +12,16 @@ import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
@@ -24,13 +29,37 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 
 public class BlockEdificeCore extends Block {
 	
 	public BlockEdificeCore() {
 		super(AbstractBlock.Properties.of((new Material.Builder(MaterialColor.METAL)).nonSolid().build(), MaterialColor.METAL).requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.METAL));
+	}
+	
+	@Override
+	public void onRemove(BlockState state, World world, BlockPos pos, BlockState blockState2, boolean bool) {
+		if (!state.is(blockState2.getBlock())) {
+			TileEntity tileEntity = world.getBlockEntity(pos);
+			if (tileEntity != null) {
+				tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
+					NonNullList<ItemStack> items = NonNullList.create();
+					for (int i = 0; i < handler.getSlots(); i++) {
+						ItemStack item = handler.getStackInSlot(i);
+						if (!item.equals(ItemStack.EMPTY)) {
+							items.add(item);
+						}
+					}
+					InventoryHelper.dropContents(world, pos, items);
+					world.updateNeighbourForOutputSignal(pos, this);
+				});
+			}
+		}
+		super.onRemove(state, world, pos, blockState2, bool);
 	}
 	
 	@Override

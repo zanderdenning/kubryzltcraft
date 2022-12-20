@@ -1,4 +1,4 @@
-package io.github.eisoptrophobia.kubryzltcraft.data;
+package io.github.eisoptrophobia.kubryzltcraft.data.capability.kubryzltcraftteammember;
 
 import io.github.eisoptrophobia.kubryzltcraft.warfare.team.KubryzltcraftTeam;
 

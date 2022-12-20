@@ -1,4 +1,4 @@
-package io.github.eisoptrophobia.kubryzltcraft.data;
+package io.github.eisoptrophobia.kubryzltcraft.data.capability.kubryzltcraftteammember;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -34,7 +34,7 @@ public class KubryzltcraftTeamMemberProvider implements ICapabilitySerializable<
 	
 	@Override
 	public void deserializeNBT(CompoundNBT nbt) {
-		if (CapabilityKubryzltcraftTeamMember.INSTANCE == null) {
+		if (CapabilityKubryzltcraftTeamMember.INSTANCE != null) {
 			CapabilityKubryzltcraftTeamMember.INSTANCE.readNBT(kubryzltcraftTeamMember, null, nbt);
 		}
 	}

@@ -4,8 +4,6 @@ import io.github.eisoptrophobia.kubryzltcraft.warfare.team.KubryzltcraftTeam;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.team.KubryzltcraftTeamManager;
 import net.minecraft.util.math.BlockPos;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -16,12 +14,17 @@ public class TerritoryManagerTest extends TerritoryManager {
 	
 	@Override
 	public void init() {
-		testTerritory = new Territory("test", KubryzltcraftTeamManager.NEUTRAL);
+		testTerritory = new Territory("test");
 	}
 	
 	@Override
 	public Collection<Territory> getTerritories() {
 		return Collections.singletonList(testTerritory);
+	}
+	
+	@Override
+	public Collection<String> getTerritoryIds() {
+		return Collections.singletonList("test");
 	}
 	
 	@Override
@@ -41,6 +44,6 @@ public class TerritoryManagerTest extends TerritoryManager {
 	
 	@Override
 	public void convert(Territory territory, KubryzltcraftTeam team) {
-		territory.setTeam(team);
+		KubryzltcraftTeamManager.setTerritoryTeam(territory, team);
 	}
 }

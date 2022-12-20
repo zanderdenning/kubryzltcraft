@@ -21,12 +21,14 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ScreenEdificeCore extends ContainerScreen<ContainerEdificeCore> {
 	
 	private final ResourceLocation GUI = new ResourceLocation(Kubryzltcraft.MOD_ID, "textures/gui/container/edifice_core.png");
+	private final List<ItemStack> items = new ArrayList<>();
 	
 	public ScreenEdificeCore(ContainerEdificeCore container, PlayerInventory inventory, ITextComponent title) {
 		super(container, inventory, title);
@@ -39,13 +41,22 @@ public class ScreenEdificeCore extends ContainerScreen<ContainerEdificeCore> {
 	
 	@Override
 	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		this.renderBackground(matrixStack);
+		renderBackground(matrixStack);
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
-		this.renderTooltip(matrixStack, mouseX, mouseY);
+		renderTooltip(matrixStack, mouseX, mouseY);
+		for (int i = 0; i < items.size(); i ++) {
+			int itemX = leftPos + 8 + (i % 4) * 18;
+			int itemY = height / 2 - 66 + (i / 4) * 18;
+			if (mouseX >= itemX && mouseX < itemX + 16 && mouseY >= itemY && mouseY < itemY + 16) {
+				renderTooltip(matrixStack, items.get(i), mouseX, mouseY);
+				break;
+			}
+		}
 	}
 	
 	@Override
 	protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
+		items.clear();
 		RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
 		minecraft.getTextureManager().bind(GUI);
 		blit(matrixStack, getGuiLeft(), getGuiTop(), 0, 0, getXSize(), getYSize());
@@ -59,12 +70,14 @@ public class ScreenEdificeCore extends ContainerScreen<ContainerEdificeCore> {
 						int column = 0;
 						int row = 0;
 						for (Map.Entry<Item, Pair<Integer, List<Pair<Integer, int[]>>>> item : missingBlocks.getSecond().entrySet()) {
-							renderItemStack(new ItemStack(item.getKey(), item.getValue().getFirst()), 8 + column * 18, 66 - row * 18);
+							ItemStack stack = new ItemStack(item.getKey(), item.getValue().getFirst());
+							renderItemStack(stack, 8 + column * 18, 66 - row * 18);
 							column ++;
 							if (column % 4 == 0) {
 								column = 0;
 								row ++;
 							}
+							items.add(stack);
 						}
 						font.draw(matrixStack, new TranslationTextComponent("kubryzltcraft.gui.edifice_core.incomplete"), leftPos + 98, topPos + 55, Color.RED.getRGB());
 						break;

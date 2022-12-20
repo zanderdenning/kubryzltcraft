@@ -2,6 +2,9 @@
 	"block.kubryzltcraft.kubryzlt": "Kubryzlt",
 	"block.kubryzltcraft.edifice_core": "Edifice Core",
 
+	"commands.kubryzltcraft.kubryzltadminmoraleget.success": "%s has %s morale",
+	"commands.kubryzltcraft.kubryzltadminmoraleset.success": "Morale of %s set to %s",
+
 	"item.kubryzltcraft.blueprint_blank": "Blueprint (Blank)",
 	"item.kubryzltcraft.blueprint_radar": "Blueprint (Radar)",
 

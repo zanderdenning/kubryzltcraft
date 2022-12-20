@@ -18,6 +18,11 @@ public class TerritoryManagerNull extends TerritoryManager {
 	}
 	
 	@Override
+	public Collection<String> getTerritoryIds() {
+		return Collections.emptySet();
+	}
+	
+	@Override
 	public Territory getTerritoryByBlockPos(BlockPos pos) {
 		return null;
 	}

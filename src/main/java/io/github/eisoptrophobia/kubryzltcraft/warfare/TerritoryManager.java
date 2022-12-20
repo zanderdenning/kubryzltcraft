@@ -15,6 +15,8 @@ public abstract class TerritoryManager extends ForgeRegistryEntry<TerritoryManag
 	
 	public abstract Collection<Territory> getTerritories();
 	
+	public abstract Collection<String> getTerritoryIds();
+	
 	public abstract Territory getTerritoryByBlockPos(BlockPos pos);
 	
 	public abstract Set<Territory> getNeighbors(Territory territory);

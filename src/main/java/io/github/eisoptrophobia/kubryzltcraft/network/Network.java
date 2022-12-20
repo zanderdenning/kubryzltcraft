@@ -7,7 +7,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class Network {
 	
-	public static final String NETWORK_VERSION = "0.1.0";
+	private static final String NETWORK_VERSION = "0.1.0";
 	
 	public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
 			new ResourceLocation(Kubryzltcraft.MOD_ID, "network"),
@@ -17,6 +17,6 @@ public class Network {
 	);
 	
 	public static void init() {
-		CHANNEL.registerMessage(0, MessageEdificeBlocks.class, MessageEdificeBlocks::encode, MessageEdificeBlocks::decode, MessageEdificeBlocks::handle);
+		CHANNEL.registerMessage(0, MessageKubryzltcraftMapSync.class, MessageKubryzltcraftMapSync::encode, MessageKubryzltcraftMapSync::decode, MessageKubryzltcraftMapSync::handle);
 	}
 }
