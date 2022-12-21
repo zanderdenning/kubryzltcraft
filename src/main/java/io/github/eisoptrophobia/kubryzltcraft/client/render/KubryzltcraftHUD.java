@@ -25,7 +25,7 @@ public class KubryzltcraftHUD {
 		FontRenderer font = Minecraft.getInstance().font;
 		BlockPos pos = Minecraft.getInstance().player.blockPosition();
 		Territory territory = TerritoryManager.getManager().getTerritoryByBlockPos(pos);
-		String toRender = "[" + KubryzltcraftTeamManager.getTerritoryTeamClient(territory).getPrefix() + "] " + territory.getId() + "(" + territory.getMoraleClient() + ")";
+		String toRender = "[" + KubryzltcraftTeamManager.getTerritoryTeamClient(territory).getPrefix() + "] " + territory.getId() + " (" + territory.getMoraleClient() + ")";
 		font.drawShadow(matrixStack, toRender, 4, 4, Color.WHITE.getRGB());
 	}
 }
