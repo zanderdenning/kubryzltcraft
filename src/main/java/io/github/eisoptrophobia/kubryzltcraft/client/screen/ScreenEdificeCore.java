@@ -64,13 +64,13 @@ public class ScreenEdificeCore extends ContainerScreen<ContainerEdificeCore> {
 		menu.getTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
 			Edifice edifice = EdificeUtils.getEdificeByBlueprint(handler.getStackInSlot(0).getItem());
 			if (edifice != null) {
-				Pair<EdificeUtils.Validity, Map<Item, Pair<Integer, List<Pair<Integer, int[]>>>>> missingBlocks = EdificeUtils.getMissingBlocks(menu.getTileEntity().getLevel(), edifice, menu.getTileEntity().getBlockPos(), Rotation.NONE);
-				switch (missingBlocks.getFirst()) {
+				EdificeUtils.StatusData missingBlocks = EdificeUtils.getMissingBlocks(menu.getTileEntity().getLevel(), edifice, menu.getTileEntity().getBlockPos(), Rotation.NONE);
+				switch (missingBlocks.getValidity()) {
 					case INCOMPLETE:
 						int column = 0;
 						int row = 0;
-						for (Map.Entry<Item, Pair<Integer, List<Pair<Integer, int[]>>>> item : missingBlocks.getSecond().entrySet()) {
-							ItemStack stack = new ItemStack(item.getKey(), item.getValue().getFirst());
+						for (Map.Entry<Item, List<EdificeUtils.StatusData.BlockData>> item : missingBlocks.getMissingBlocks().entrySet()) {
+							ItemStack stack = new ItemStack(item.getKey(), item.getValue().size());
 							renderItemStack(stack, 8 + column * 18, 66 - row * 18);
 							column ++;
 							if (column % 4 == 0) {

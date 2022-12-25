@@ -36,6 +36,9 @@ public class WorldSavedDataKubryzltcraftTimer extends WorldSavedData {
 			day = saveData.getInt("day");
 			hour = saveData.getInt("hour");
 			minute = saveData.getInt("minute");
+			if (day < 2) {
+				day = 2;
+			}
 		}
 		else {
 			LocalDateTime now = LocalDateTime.now(ZoneId.of(ConfigCommon.TIME_ZONE.get())).minusHours(ConfigCommon.DAY_TICK_HOUR.get());
@@ -61,6 +64,7 @@ public class WorldSavedDataKubryzltcraftTimer extends WorldSavedData {
 	
 	public static LocalDateTime readDateTime(ServerWorld world) {
 		WorldSavedDataKubryzltcraftTimer data = world.getDataStorage().computeIfAbsent(WorldSavedDataKubryzltcraftTimer::new, NAME);
+		// null check it?
 		return LocalDateTime.of(Year.of(data.year).atDay(data.day), LocalTime.of(data.hour, data.minute));
 	}
 	

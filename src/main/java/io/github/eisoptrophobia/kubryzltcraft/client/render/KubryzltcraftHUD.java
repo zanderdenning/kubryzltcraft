@@ -8,7 +8,7 @@ import io.github.eisoptrophobia.kubryzltcraft.warfare.team.KubryzltcraftTeamMana
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,7 +24,8 @@ public class KubryzltcraftHUD {
 		MatrixStack matrixStack = event.getMatrixStack();
 		FontRenderer font = Minecraft.getInstance().font;
 		BlockPos pos = Minecraft.getInstance().player.blockPosition();
-		Territory territory = TerritoryManager.getManager().getTerritoryByBlockPos(pos);
+		World world = Minecraft.getInstance().player.level;
+		Territory territory = TerritoryManager.getManager().getTerritoryByBlockPos(world, pos);
 		String toRender = "[" + KubryzltcraftTeamManager.getTerritoryTeamClient(territory).getPrefix() + "] " + territory.getId() + " (" + territory.getMoraleClient() + ")";
 		font.drawShadow(matrixStack, toRender, 4, 4, Color.WHITE.getRGB());
 	}

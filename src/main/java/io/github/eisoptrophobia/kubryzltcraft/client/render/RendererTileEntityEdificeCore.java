@@ -35,14 +35,14 @@ public class RendererTileEntityEdificeCore extends TileEntityRenderer<TileEntity
 			Edifice edifice = EdificeUtils.getEdificeByBlueprint(handler.getStackInSlot(0).getItem());
 			if (edifice != null) {
 				BlockRendererDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
-				Pair<EdificeUtils.Validity, Map<Item, Pair<Integer, List<Pair<Integer, int[]>>>>> missing = EdificeUtils.getMissingBlocks(tileEntity.getLevel(), edifice, tileEntity.getBlockPos(), Rotation.NONE);
-				if (missing.getFirst() == EdificeUtils.Validity.INCOMPLETE) {
+				EdificeUtils.StatusData missing = EdificeUtils.getMissingBlocks(tileEntity.getLevel(), edifice, tileEntity.getBlockPos(), Rotation.NONE);
+				if (missing.getValidity() == EdificeUtils.Validity.INCOMPLETE) {
 					EdificeUtils.StructureData structureData = EdificeUtils.getEdificeStructureData(edifice);
-					for (Pair<Integer, List<Pair<Integer, int[]>>> item : missing.getSecond().values()) {
-						for (Pair<Integer, int[]> block : item.getSecond()) {
-							int[] pos = block.getSecond();
+					for (Map.Entry<Item, List<EdificeUtils.StatusData.BlockData>> item : missing.getMissingBlocks().entrySet()) {
+						for (EdificeUtils.StatusData.BlockData block : item.getValue()) {
+							int[] pos = block.getPos();
 							Vector3i offset = edifice.getOffset();
-							renderBlock(blockRenderer, matrixStack, buffer, overlay, structureData.getPalette().get(block.getFirst()), pos[0] + offset.getX(), pos[1] + offset.getY(), pos[2] + offset.getZ());
+							renderBlock(blockRenderer, matrixStack, buffer, overlay, structureData.getPalette().get(block.getPaletteIndex()), pos[0] + offset.getX(), pos[1] + offset.getY(), pos[2] + offset.getZ());
 						}
 					}
 				}

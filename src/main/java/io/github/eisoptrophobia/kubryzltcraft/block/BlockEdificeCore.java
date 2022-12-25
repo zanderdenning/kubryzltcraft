@@ -3,6 +3,7 @@ package io.github.eisoptrophobia.kubryzltcraft.block;
 import io.github.eisoptrophobia.kubryzltcraft.block.entity.ModTileEntities;
 import io.github.eisoptrophobia.kubryzltcraft.block.entity.TileEntityEdificeCore;
 import io.github.eisoptrophobia.kubryzltcraft.block.entity.container.ContainerEdificeCore;
+import io.github.eisoptrophobia.kubryzltcraft.data.WorldSavedDataKubryzltcraftMap;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,12 +29,15 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class BlockEdificeCore extends Block {
 	
@@ -45,7 +49,11 @@ public class BlockEdificeCore extends Block {
 	public void onRemove(BlockState state, World world, BlockPos pos, BlockState blockState2, boolean bool) {
 		if (!state.is(blockState2.getBlock())) {
 			TileEntity tileEntity = world.getBlockEntity(pos);
-			if (tileEntity != null) {
+			if (tileEntity instanceof TileEntityEdificeCore) {
+				ServerWorld serverWorld = ServerLifecycleHooks.getCurrentServer().overworld();
+				UUID uuid = ((TileEntityEdificeCore) tileEntity).getUuid();
+				WorldSavedDataKubryzltcraftMap.cleanKubryzltEdifices(serverWorld, uuid);
+				WorldSavedDataKubryzltcraftMap.deleteEdificeLocationStatus(serverWorld, uuid);
 				tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
 					NonNullList<ItemStack> items = NonNullList.create();
 					for (int i = 0; i < handler.getSlots(); i++) {

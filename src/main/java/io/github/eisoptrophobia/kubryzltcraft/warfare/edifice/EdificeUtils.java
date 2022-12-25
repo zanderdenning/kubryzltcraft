@@ -1,25 +1,27 @@
 package io.github.eisoptrophobia.kubryzltcraft.warfare.edifice;
 
 import com.mojang.datafixers.util.Pair;
+import io.github.eisoptrophobia.kubryzltcraft.ConfigCommon;
 import io.github.eisoptrophobia.kubryzltcraft.Kubryzltcraft;
+import io.github.eisoptrophobia.kubryzltcraft.block.entity.TileEntityEdificeCore;
+import io.github.eisoptrophobia.kubryzltcraft.data.WorldSavedDataKubryzltcraftMap;
+import io.github.eisoptrophobia.kubryzltcraft.warfare.TerritoryManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.*;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class EdificeUtils {
@@ -54,14 +56,50 @@ public class EdificeUtils {
 		}
 	}
 	
-	public static List<Template.BlockInfo> getEdificeBlocks(World world, Edifice edifice, BlockPos pos, Rotation rotation) {
-		return null;
+	public static void updateEdificesAround(World world, BlockPos pos) {
+		Set<Map.Entry<UUID, Pair<World, BlockPos>>> toUpdate = WorldSavedDataKubryzltcraftMap.searchEdificeLocations(ServerLifecycleHooks.getCurrentServer().overworld(), world, pos, ConfigCommon.EDIFICE_UPDATE_RADIUS.get());
+		for (Map.Entry<UUID, Pair<World, BlockPos>> edifice : toUpdate) {
+			updateEdifice(edifice.getValue().getFirst(), edifice.getValue().getSecond());
+		}
 	}
 	
-	public static Pair<Validity, Map<Item, Pair<Integer, List<Pair<Integer, int[]>>>>> getMissingBlocks(World world, Edifice edifice, BlockPos pos, Rotation rotation) {
+	public static void updateEdifice(World world, BlockPos pos) {
+		try {
+			ServerWorld overworld = ServerLifecycleHooks.getCurrentServer().overworld();
+			TileEntity tile = world.getBlockEntity(pos);
+			if (tile instanceof TileEntityEdificeCore) {
+				UUID uuid = ((TileEntityEdificeCore) tile).getUuid();
+				Rotation rotation = ((TileEntityEdificeCore) tile).getRotation();
+				IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseThrow(Exception::new);
+				Edifice edifice = getEdificeByBlueprint(handler.getStackInSlot(0).getItem());
+				if (edifice == null) {
+					return;
+				}
+				StatusData statusData = getMissingBlocks(world, edifice, pos, rotation);
+				WorldSavedDataKubryzltcraftMap.writeEdificeLocation(overworld, uuid, world, pos);
+				WorldSavedDataKubryzltcraftMap.writeEdificeStatus(overworld, uuid, statusData);
+				String territory = TerritoryManager.getManager().getTerritoryByBlockPos(world, pos).getId();
+				WorldSavedDataKubryzltcraftMap.cleanKubryzltEdifices(overworld, uuid);
+				WorldSavedDataKubryzltcraftMap.writeKubryzltEdifice(overworld, territory, uuid);
+			}
+		}
+		catch (Exception e) {}
+	}
+	
+	public static StatusData getMissingBlocksServer(World world, Edifice edifice, BlockPos pos) {
+		TileEntity tile = world.getBlockEntity(pos);
+		if (tile instanceof TileEntityEdificeCore) {
+			UUID uuid = ((TileEntityEdificeCore) tile).getUuid();
+			return WorldSavedDataKubryzltcraftMap.readEdificeStatus(ServerLifecycleHooks.getCurrentServer().overworld(), uuid);
+		}
+		StatusData defaultOut = new StatusData(edifice);
+		defaultOut.setObstructed();
+		return defaultOut;
+	}
+	
+	public static StatusData getMissingBlocks(World world, Edifice edifice, BlockPos pos, Rotation rotation) {
 		StructureData structure = structureDataRegistry.get(edifice);
-		Map<Item, Pair<Integer, List<Pair<Integer, int[]>>>> missing = new HashMap<>();
-		boolean obstructed = false;
+		StatusData status = new StatusData(edifice);
 		int[] size = structure.size;
 		for (int i = 0; i < structure.blocks.size(); i ++) {
 			Pair<int[], Integer> block = structure.blocks.get(i);
@@ -88,24 +126,14 @@ public class EdificeUtils {
 			BlockState ideal = structure.palette.get(block.getSecond());
 			if (!found.getBlock().equals(ideal.getBlock()) || !found.getValues().equals(ideal.getValues())) {
 				if (!found.isAir()) {
-					obstructed = true;
+					status.setObstructed();
 				}
 				if (!ideal.isAir()) {
-					Item item = ideal.getBlock().asItem();
-					Pair<Integer, List<Pair<Integer, int[]>>> current = missing.getOrDefault(item, new Pair<>(0, new ArrayList<>()));
-					current.getSecond().add(new Pair<>(block.getSecond(), position));
-					Pair<Integer, List<Pair<Integer, int[]>>> newValue = new Pair<>(current.getFirst() + 1, current.getSecond());
-					missing.put(item, newValue);
+					status.addMissingBlock(ideal, position, block.getSecond());
 				}
 			}
 		}
-		if (obstructed) {
-			return new Pair<>(Validity.OBSTRUCTED, missing);
-		}
-		if (missing.isEmpty()) {
-			return new Pair<>(Validity.VALID, missing);
-		}
-		return new Pair<>(Validity.INCOMPLETE, missing);
+		return status;
 	}
 	
 	public enum Validity {
@@ -133,6 +161,106 @@ public class EdificeUtils {
 				return new Pair<>(new int[] {pos.getInt(0), pos.getInt(1), pos.getInt(2)}, ((CompoundNBT) e).getInt("state"));
 			}).collect(Collectors.toList());
 			palette = nbt.getList("palette", Constants.NBT.TAG_COMPOUND).stream().map(e -> NBTUtil.readBlockState((CompoundNBT) e)).collect(Collectors.toList());
+		}
+	}
+	
+	public static class StatusData {
+		
+		private final Map<Item, List<BlockData>> missingBlocks = new HashMap<>();
+		private boolean obstructed = false;
+		private final Edifice edifice;
+		
+		public StatusData(Edifice edifice) {
+			this.edifice = edifice;
+		}
+		
+		public void addMissingBlock(BlockState state, int[] pos, int paletteIndex) {
+			Item item = state.getBlock().asItem();
+			List<BlockData> current = missingBlocks.getOrDefault(item, new ArrayList<>());
+			current.add(new BlockData(paletteIndex, pos));
+			missingBlocks.put(item, current);
+		}
+		
+		public void setObstructed() {
+			obstructed = true;
+		}
+		
+		public Validity getValidity() {
+			if (obstructed) {
+				return Validity.OBSTRUCTED;
+			}
+			if (missingBlocks.size() == 0) {
+				return Validity.VALID;
+			}
+			return Validity.INCOMPLETE;
+		}
+		
+		public Map<Item, List<BlockData>> getMissingBlocks() {
+			return missingBlocks;
+		}
+		
+		public CompoundNBT save() {
+			CompoundNBT nbt = new CompoundNBT();
+			nbt.putBoolean("obstructed", false);
+			nbt.putString("type", edifice.getRegistryName().toString());
+			ListNBT missing = new ListNBT();
+			for (Map.Entry<Item, List<BlockData>> missingItem : missingBlocks.entrySet()) {
+				CompoundNBT item = new CompoundNBT();
+				ListNBT blocks = new ListNBT();
+				for (BlockData blockData : missingItem.getValue()) {
+					CompoundNBT data = new CompoundNBT();
+					data.putInt("paletteIndex", blockData.getPaletteIndex());
+					int[] pos = blockData.getPos();
+					data.putInt("x", pos[0]);
+					data.putInt("y", pos[1]);
+					data.putInt("z", pos[2]);
+					blocks.add(data);
+				}
+				item.put("blocks", blocks);
+				missing.add(item);
+			}
+			nbt.put("missing", missing);
+			return nbt;
+		}
+		
+		public static StatusData load(CompoundNBT nbt) {
+			Edifice type = Kubryzltcraft.EDIFICE_REGISTRY.getValue(new ResourceLocation(nbt.getString("type")));
+			StatusData statusData = new StatusData(type);
+			List<BlockState> palette = structureDataRegistry.get(type).getPalette();
+			if (nbt.getBoolean("obstructed")) {
+				statusData.setObstructed();
+			}
+			ListNBT missing = nbt.getList("missing", Constants.NBT.TAG_COMPOUND);
+			for (INBT missingItem : missing) {
+				CompoundNBT item = (CompoundNBT) missingItem;
+				ListNBT blocks = item.getList("blocks", Constants.NBT.TAG_COMPOUND);
+				for (INBT block : blocks) {
+					CompoundNBT blockCompound = (CompoundNBT) block;
+					int[] pos = new int[] { blockCompound.getInt("x"), blockCompound.getInt("y"), blockCompound.getInt("z") };
+					int paletteIndex = blockCompound.getInt("paletteIndex");
+					statusData.addMissingBlock(palette.get(paletteIndex), pos, paletteIndex);
+				}
+			}
+			return statusData;
+		}
+		
+		public static class BlockData {
+			
+			private final int paletteIndex;
+			private final int[] pos;
+			
+			public BlockData(int paletteIndex, int[] pos) {
+				this.paletteIndex = paletteIndex;
+				this.pos = pos;
+			}
+			
+			public int getPaletteIndex() {
+				return paletteIndex;
+			}
+			
+			public int[] getPos() {
+				return pos;
+			}
 		}
 	}
 }

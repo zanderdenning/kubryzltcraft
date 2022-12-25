@@ -2,6 +2,7 @@ package io.github.eisoptrophobia.kubryzltcraft.warfare;
 
 import io.github.eisoptrophobia.kubryzltcraft.warfare.team.KubryzltcraftTeam;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.Collection;
@@ -17,7 +18,7 @@ public abstract class TerritoryManager extends ForgeRegistryEntry<TerritoryManag
 	
 	public abstract Collection<String> getTerritoryIds();
 	
-	public abstract Territory getTerritoryByBlockPos(BlockPos pos);
+	public abstract Territory getTerritoryByBlockPos(World world, BlockPos pos);
 	
 	public abstract Set<Territory> getNeighbors(Territory territory);
 	

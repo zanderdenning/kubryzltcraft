@@ -3,12 +3,18 @@ package io.github.eisoptrophobia.kubryzltcraft.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import io.github.eisoptrophobia.kubryzltcraft.data.WorldSavedDataKubryzltcraftMap;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.Territory;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.TerritoryManager;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.team.KubryzltcraftTeam;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
+
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class CommandKubryzltAdmin {
 
@@ -48,6 +54,17 @@ public class CommandKubryzltAdmin {
 									return 1;
 								})
 							)
+						)
+					)
+				).then(Commands.literal("edifice")
+					.then(Commands.literal("list")
+						.then(Commands.argument("territory", ArgumentTerritory.territory())
+							.executes(context -> {
+								Territory territory = ArgumentTerritory.getTerritory(context, "territory");
+								String out = WorldSavedDataKubryzltcraftMap.readKubryzltEdifices(ServerLifecycleHooks.getCurrentServer().overworld(), territory.getId()).stream().map(UUID::toString).collect(Collectors.joining(", "));
+								context.getSource().sendSuccess(new StringTextComponent(out), false);
+								return 1;
+							})
 						)
 					)
 				);

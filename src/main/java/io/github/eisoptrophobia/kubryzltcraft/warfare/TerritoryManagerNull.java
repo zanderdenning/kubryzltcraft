@@ -2,6 +2,7 @@ package io.github.eisoptrophobia.kubryzltcraft.warfare;
 
 import io.github.eisoptrophobia.kubryzltcraft.warfare.team.KubryzltcraftTeam;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -23,7 +24,7 @@ public class TerritoryManagerNull extends TerritoryManager {
 	}
 	
 	@Override
-	public Territory getTerritoryByBlockPos(BlockPos pos) {
+	public Territory getTerritoryByBlockPos(World world, BlockPos pos) {
 		return null;
 	}
 	

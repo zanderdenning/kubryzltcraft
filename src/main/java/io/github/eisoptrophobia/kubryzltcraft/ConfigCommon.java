@@ -25,6 +25,7 @@ public class ConfigCommon {
 	public static ForgeConfigSpec.ConfigValue<Integer> DEFAULT_MORALE;
 	public static ForgeConfigSpec.ConfigValue<String> TIME_ZONE;
 	public static ForgeConfigSpec.ConfigValue<Integer> DAY_TICK_HOUR;
+	public static ForgeConfigSpec.ConfigValue<Integer> EDIFICE_UPDATE_RADIUS;
 	
 	static {
 		BUILDER.push("general");
@@ -32,6 +33,7 @@ public class ConfigCommon {
 		DEFAULT_MORALE = BUILDER.define("defaultMorale", 1000);
 		TIME_ZONE = BUILDER.define("timeZone", "America/Los_Angeles");
 		DAY_TICK_HOUR = BUILDER.define("dayTickHour", 20);
+		EDIFICE_UPDATE_RADIUS = BUILDER.define("edificeUpdateRadius", 15);
 		BUILDER.pop();
 	}
 	

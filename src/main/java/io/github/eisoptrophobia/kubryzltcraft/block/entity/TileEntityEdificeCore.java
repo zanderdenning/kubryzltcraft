@@ -1,6 +1,5 @@
 package io.github.eisoptrophobia.kubryzltcraft.block.entity;
 
-import com.mojang.datafixers.util.Pair;
 import io.github.eisoptrophobia.kubryzltcraft.data.tags.KubryzltcraftTags;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.edifice.Edifice;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.edifice.EdificeUtils;
@@ -24,25 +23,32 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class TileEntityEdificeCore extends TileEntity implements ITickableTileEntity {
 	
 	private final ItemStackHandler itemHandler = createItemHandler();
 	private final LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.of(() -> itemHandler);
+	private UUID uuid;
+	private Rotation rotation = Rotation.NONE;
 	
 	public TileEntityEdificeCore() {
 		super(ModTileEntities.EDIFICE_CORE.get());
+		uuid = UUID.randomUUID();
 	}
 	
 	@Override
 	public void load(BlockState state, CompoundNBT nbt) {
 		itemHandler.deserializeNBT(nbt.getCompound("inventory"));
+		uuid = nbt.getUUID("uuid");
+		EdificeUtils.updateEdifice(level, worldPosition);
 		super.load(state, nbt);
 	}
 	
 	@Override
 	public CompoundNBT save(CompoundNBT nbt) {
 		nbt.put("inventory", itemHandler.serializeNBT());
+		nbt.putUUID("uuid", uuid);
 		return super.save(nbt);
 	}
 	
@@ -70,19 +76,19 @@ public class TileEntityEdificeCore extends TileEntity implements ITickableTileEn
 				if (edifice == null) {
 					return false;
 				}
-				Pair<EdificeUtils.Validity, Map<Item, Pair<Integer, List<Pair<Integer, int[]>>>>> missing = EdificeUtils.getMissingBlocks(level, edifice, worldPosition, Rotation.NONE);
-				if (missing.getFirst() != EdificeUtils.Validity.INCOMPLETE) {
+				EdificeUtils.StatusData missing = EdificeUtils.getMissingBlocksServer(level, edifice, worldPosition);
+				if (missing.getValidity() != EdificeUtils.Validity.INCOMPLETE) {
 					return true;
 				}
-				return missing.getSecond().containsKey(stack.getItem());
+				return missing.getMissingBlocks().containsKey(stack.getItem());
 			}
 			
-			public boolean isItemValid(int slot, @Nonnull ItemStack stack, Pair<EdificeUtils.Validity, Map<Item, Pair<Integer, List<Pair<Integer, int[]>>>>> missing) {
+			public boolean isItemValid(int slot, @Nonnull ItemStack stack, EdificeUtils.StatusData missing) {
 				if (slot == 1) {
-					if (missing.getFirst() != EdificeUtils.Validity.INCOMPLETE) {
+					if (missing.getValidity() != EdificeUtils.Validity.INCOMPLETE) {
 						return false;
 					}
-					return missing.getSecond().containsKey(stack.getItem());
+					return missing.getMissingBlocks().containsKey(stack.getItem());
 				}
 				return isItemValid(slot, stack);
 			}
@@ -92,9 +98,9 @@ public class TileEntityEdificeCore extends TileEntity implements ITickableTileEn
 			public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
 				Edifice edifice = EdificeUtils.getEdificeByBlueprint(lazyItemHandler.orElse(itemHandler).getStackInSlot(0).getItem());
 				if (slot == 1 && edifice != null) {
-					Pair<EdificeUtils.Validity, Map<Item, Pair<Integer, List<Pair<Integer, int[]>>>>> missing = EdificeUtils.getMissingBlocks(level, edifice, worldPosition, Rotation.NONE);
+					EdificeUtils.StatusData missing = EdificeUtils.getMissingBlocksServer(level, edifice, worldPosition);
 					if (isItemValid(slot, stack, missing)) {
-						int count = missing.getSecond().get(stack.getItem()).getFirst();
+						int count = missing.getMissingBlocks().get(stack.getItem()).size();
 						ItemStack reducedStack = stack.copy();
 						reducedStack.setCount(count);
 						ItemStack out = super.insertItem(slot, reducedStack, simulate);
@@ -127,17 +133,25 @@ public class TileEntityEdificeCore extends TileEntity implements ITickableTileEn
 		Edifice edifice = EdificeUtils.getEdificeByBlueprint(handler.getStackInSlot(0).getItem());
 		ItemStack stack = handler.getStackInSlot(1);
 		if (edifice != null && !stack.isEmpty()) {
-			Pair<EdificeUtils.Validity, Map<Item, Pair<Integer, List<Pair<Integer, int[]>>>>> missing = EdificeUtils.getMissingBlocks(level, edifice, worldPosition, Rotation.NONE);
-			if (missing.getFirst() == EdificeUtils.Validity.INCOMPLETE) {
-				Map<Item, Pair<Integer, List<Pair<Integer, int[]>>>> itemMap = missing.getSecond();
+			EdificeUtils.StatusData missing = EdificeUtils.getMissingBlocksServer(level, edifice, worldPosition);
+			if (missing.getValidity() == EdificeUtils.Validity.INCOMPLETE) {
+				Map<Item, List<EdificeUtils.StatusData.BlockData>> itemMap = missing.getMissingBlocks();
 				if (itemMap.containsKey(stack.getItem())) {
-					Pair<Integer, int[]> blockData = itemMap.get(stack.getItem()).getSecond().get(0);
-					int[] position = blockData.getSecond();
+					EdificeUtils.StatusData.BlockData blockData = itemMap.get(stack.getItem()).get(0);
+					int[] position = blockData.getPos();
 					BlockPos newPos = worldPosition.offset(position[0], position[1], position[2]).offset(edifice.getOffset());
-					level.setBlock(newPos, EdificeUtils.getEdificeStructureData(edifice).getPalette().get(blockData.getFirst()), Constants.BlockFlags.DEFAULT);
+					level.setBlock(newPos, EdificeUtils.getEdificeStructureData(edifice).getPalette().get(blockData.getPaletteIndex()), Constants.BlockFlags.DEFAULT);
 					stack.shrink(1);
 				}
 			}
 		}
+	}
+	
+	public UUID getUuid() {
+		return uuid;
+	}
+	
+	public Rotation getRotation() {
+		return rotation;
 	}
 }

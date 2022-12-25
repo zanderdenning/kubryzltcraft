@@ -2,7 +2,6 @@ package io.github.eisoptrophobia.kubryzltcraft.client.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import io.github.eisoptrophobia.kubryzltcraft.Kubryzltcraft;
 import io.github.eisoptrophobia.kubryzltcraft.block.entity.ModTileEntities;
 import io.github.eisoptrophobia.kubryzltcraft.block.entity.TileEntityKubryzlt;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.Territory;
@@ -30,7 +29,7 @@ public class RendererTileEntityKubryzlt extends TileEntityRenderer<TileEntityKub
 	
 	@Override
 	public void render(TileEntityKubryzlt tileEntity, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int light, int overlay) {
-		Territory territory = TerritoryManager.getManager().getTerritoryByBlockPos(tileEntity.getBlockPos());
+		Territory territory = TerritoryManager.getManager().getTerritoryByBlockPos(tileEntity.getLevel(), tileEntity.getBlockPos());
 		TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(KubryzltcraftTeamManager.getTerritoryTeamClient(territory).getKubryzltTexture());
 		IVertexBuilder builder = buffer.getBuffer(RenderType.solid());
 		

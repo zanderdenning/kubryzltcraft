@@ -17,15 +17,7 @@ public abstract class Edifice extends ForgeRegistryEntry<Edifice> {
 	
 	public abstract Item getBlueprint();
 	
-	public abstract CompoundNBT getNBT();
-	
 	public abstract Vector3i getOffset();
-	
-	public abstract boolean isValid(BlockPos pos, World world);
-	
-	public abstract List<ItemStack> getMissingBlocks(BlockPos pos, World world);
-	
-	public abstract void placeBlock(BlockPos pos, World world, ItemStack item);
 	
 	public void onTick(BlockPos pos, World world) {}
 	
