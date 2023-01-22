@@ -12,7 +12,6 @@ public class EventNeighborNotify {
 	@SubscribeEvent
 	public static void onNeighborNotify(BlockEvent.NeighborNotifyEvent event) {
 		if (!event.getWorld().isClientSide()) {
-			Kubryzltcraft.LOGGER.info("update");
 			EdificeUtils.updateEdificesAround(((World) event.getWorld()), event.getPos());
 		}
 	}

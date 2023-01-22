@@ -20,7 +20,7 @@ public abstract class TerritoryManager extends ForgeRegistryEntry<TerritoryManag
 	
 	public abstract Territory getTerritoryByBlockPos(World world, BlockPos pos);
 	
-	public abstract Set<Territory> getNeighbors(Territory territory);
+	public abstract Collection<Territory> getNeighbors(Territory territory);
 	
 	public abstract Territory getTerritoryById(String id);
 	

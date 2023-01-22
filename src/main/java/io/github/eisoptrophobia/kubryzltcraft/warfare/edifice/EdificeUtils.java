@@ -73,7 +73,7 @@ public class EdificeUtils {
 				IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseThrow(Exception::new);
 				Edifice edifice = getEdificeByBlueprint(handler.getStackInSlot(0).getItem());
 				if (edifice == null) {
-					return;
+					edifice = ModEdifices.NULL.get();
 				}
 				StatusData statusData = getMissingBlocks(world, edifice, pos, rotation);
 				WorldSavedDataKubryzltcraftMap.writeEdificeLocation(overworld, uuid, world, pos);

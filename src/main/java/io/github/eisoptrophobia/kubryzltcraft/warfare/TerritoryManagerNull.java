@@ -29,7 +29,7 @@ public class TerritoryManagerNull extends TerritoryManager {
 	}
 	
 	@Override
-	public Set<Territory> getNeighbors(Territory territory) {
+	public Collection<Territory> getNeighbors(Territory territory) {
 		return Collections.emptySet();
 	}
 	

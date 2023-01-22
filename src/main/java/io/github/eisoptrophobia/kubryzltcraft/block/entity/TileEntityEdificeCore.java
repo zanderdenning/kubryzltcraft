@@ -2,11 +2,11 @@ package io.github.eisoptrophobia.kubryzltcraft.block.entity;
 
 import io.github.eisoptrophobia.kubryzltcraft.Kubryzltcraft;
 import io.github.eisoptrophobia.kubryzltcraft.data.WorldSavedDataKubryzltcraftMap;
-import io.github.eisoptrophobia.kubryzltcraft.data.WorldSavedDataKubryzltcraftTimer;
 import io.github.eisoptrophobia.kubryzltcraft.data.tags.KubryzltcraftTags;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.edifice.Edifice;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.edifice.EdificeUtils;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -46,7 +46,6 @@ public class TileEntityEdificeCore extends TileEntity implements ITickableTileEn
 	
 	@Override
 	public void load(BlockState state, CompoundNBT nbt) {
-		Kubryzltcraft.LOGGER.info(nbt.toString());
 		itemHandler.deserializeNBT(nbt.getCompound("inventory"));
 		uuid = nbt.getUUID("uuid");
 		EdificeUtils.updateEdifice(level, worldPosition);
@@ -87,6 +86,7 @@ public class TileEntityEdificeCore extends TileEntity implements ITickableTileEn
 			@Override
 			protected void onContentsChanged(int slot) {
 				setChanged();
+				EdificeUtils.updateEdifice(level, worldPosition);
 			}
 			
 			@Override
@@ -173,7 +173,6 @@ public class TileEntityEdificeCore extends TileEntity implements ITickableTileEn
 		ItemStack stack = handler.getStackInSlot(1);
 		if (edifice != null && !stack.isEmpty()) {
 			EdificeUtils.StatusData missing = EdificeUtils.getMissingBlocksServer(level, edifice, worldPosition);
-			Kubryzltcraft.LOGGER.info(missing.getMissingBlocks().keySet());
 			if (missing.getValidity() == EdificeUtils.Validity.INCOMPLETE) {
 				Map<Item, List<EdificeUtils.StatusData.BlockData>> itemMap = missing.getMissingBlocks();
 				if (itemMap.containsKey(stack.getItem())) {

@@ -65,7 +65,18 @@ public class CommandKubryzltAdmin {
 								String out = WorldSavedDataKubryzltcraftMap.readKubryzltEdifices(ServerLifecycleHooks.getCurrentServer().overworld(), territory.getId()).stream().map(uuid -> {
 									EdificeUtils.StatusData status = WorldSavedDataKubryzltcraftMap.readEdificeStatus(ServerLifecycleHooks.getCurrentServer().overworld(), uuid);
 									return uuid.toString() + " | " + status.getEdifice().getRegistryName() + " | " + (status.getValidity() == EdificeUtils.Validity.VALID);
-								}).collect(Collectors.joining(", "));
+								}).collect(Collectors.joining("\n"));
+								context.getSource().sendSuccess(new StringTextComponent(out), false);
+								return 1;
+							})
+						)
+					)
+				).then(Commands.literal("territory")
+					.then(Commands.literal("neighbors")
+						.then(Commands.argument("territory", ArgumentTerritory.territory())
+							.executes(context -> {
+								Territory territory = ArgumentTerritory.getTerritory(context, "territory");
+								String out = TerritoryManager.getManager().getNeighbors(territory).stream().map(Territory::getId).collect(Collectors.joining(", "));
 								context.getSource().sendSuccess(new StringTextComponent(out), false);
 								return 1;
 							})

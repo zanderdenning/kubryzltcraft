@@ -62,7 +62,6 @@ public class WorldSavedDataKubryzltcraftMap extends WorldSavedData {
 			if (territoryData.contains("edifices")) {
 				ListNBT edifices = territoryData.getList("edifices", Constants.NBT.TAG_STRING);
 				for (INBT edifice : edifices) {
-					Kubryzltcraft.LOGGER.info(edifice.getAsString());
 					UUID uuid = UUID.fromString(edifice.getAsString());
 					addKubryzltEdifice(territory, uuid);
 				}
@@ -105,10 +104,10 @@ public class WorldSavedDataKubryzltcraftMap extends WorldSavedData {
 			CompoundNBT edifice = new CompoundNBT();
 			Pair<World, BlockPos> location = getEdificeLocation(uuid);
 			edifice.putString("world", location.getFirst().dimension().getRegistryName().toString());
-			edificeData.putInt("x", location.getSecond().getX());
-			edificeData.putInt("y", location.getSecond().getY());
-			edificeData.putInt("z", location.getSecond().getZ());
-			edificeData.put("status", getEdificeStatus(uuid).save());
+			edifice.putInt("x", location.getSecond().getX());
+			edifice.putInt("y", location.getSecond().getY());
+			edifice.putInt("z", location.getSecond().getZ());
+			edifice.put("status", getEdificeStatus(uuid).save());
 			edificeData.put(uuid.toString(), edifice);
 		}
 		nbt.put("edifice_data", edificeData);
