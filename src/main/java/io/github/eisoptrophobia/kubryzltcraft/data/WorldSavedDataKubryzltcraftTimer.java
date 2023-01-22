@@ -22,6 +22,7 @@ public class WorldSavedDataKubryzltcraftTimer extends WorldSavedData {
 	
 	public WorldSavedDataKubryzltcraftTimer(String name) {
 		super(name);
+		load(new CompoundNBT());
 	}
 	
 	public WorldSavedDataKubryzltcraftTimer() {
@@ -64,7 +65,6 @@ public class WorldSavedDataKubryzltcraftTimer extends WorldSavedData {
 	
 	public static LocalDateTime readDateTime(ServerWorld world) {
 		WorldSavedDataKubryzltcraftTimer data = world.getDataStorage().computeIfAbsent(WorldSavedDataKubryzltcraftTimer::new, NAME);
-		// null check it?
 		return LocalDateTime.of(Year.of(data.year).atDay(data.day), LocalTime.of(data.hour, data.minute));
 	}
 	

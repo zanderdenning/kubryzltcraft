@@ -199,6 +199,10 @@ public class EdificeUtils {
 			return missingBlocks;
 		}
 		
+		public Edifice getEdifice() {
+			return edifice;
+		}
+		
 		public CompoundNBT save() {
 			CompoundNBT nbt = new CompoundNBT();
 			nbt.putBoolean("obstructed", false);

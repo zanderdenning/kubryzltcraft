@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.eisoptrophobia.kubryzltcraft.data.WorldSavedDataKubryzltcraftMap;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.Territory;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.TerritoryManager;
+import io.github.eisoptrophobia.kubryzltcraft.warfare.edifice.EdificeUtils;
 import io.github.eisoptrophobia.kubryzltcraft.warfare.team.KubryzltcraftTeam;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -61,7 +62,10 @@ public class CommandKubryzltAdmin {
 						.then(Commands.argument("territory", ArgumentTerritory.territory())
 							.executes(context -> {
 								Territory territory = ArgumentTerritory.getTerritory(context, "territory");
-								String out = WorldSavedDataKubryzltcraftMap.readKubryzltEdifices(ServerLifecycleHooks.getCurrentServer().overworld(), territory.getId()).stream().map(UUID::toString).collect(Collectors.joining(", "));
+								String out = WorldSavedDataKubryzltcraftMap.readKubryzltEdifices(ServerLifecycleHooks.getCurrentServer().overworld(), territory.getId()).stream().map(uuid -> {
+									EdificeUtils.StatusData status = WorldSavedDataKubryzltcraftMap.readEdificeStatus(ServerLifecycleHooks.getCurrentServer().overworld(), uuid);
+									return uuid.toString() + " | " + status.getEdifice().getRegistryName() + " | " + (status.getValidity() == EdificeUtils.Validity.VALID);
+								}).collect(Collectors.joining(", "));
 								context.getSource().sendSuccess(new StringTextComponent(out), false);
 								return 1;
 							})

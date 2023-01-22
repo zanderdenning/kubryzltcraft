@@ -21,7 +21,6 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class WorldSavedDataKubryzltcraftMap extends WorldSavedData {
 	
@@ -63,7 +62,8 @@ public class WorldSavedDataKubryzltcraftMap extends WorldSavedData {
 			if (territoryData.contains("edifices")) {
 				ListNBT edifices = territoryData.getList("edifices", Constants.NBT.TAG_STRING);
 				for (INBT edifice : edifices) {
-					UUID uuid = UUID.fromString(edifice.toString());
+					Kubryzltcraft.LOGGER.info(edifice.getAsString());
+					UUID uuid = UUID.fromString(edifice.getAsString());
 					addKubryzltEdifice(territory, uuid);
 				}
 			}
